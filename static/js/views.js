@@ -68,6 +68,7 @@
     },
 
     accept: function(event) {
+      /*
       event.preventDefault();
       var callView = app.router.view.call;
       callView.offer = this.model.get('offer');
@@ -76,6 +77,7 @@
       });
       callView.render();
       this.clear();
+      */
     },
 
     deny: function(event) {
