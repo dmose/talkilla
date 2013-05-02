@@ -6,7 +6,10 @@
   "use strict";
 
   app.models.Call = Backbone.Model.extend({
-    initialize: function() {
+    initialize: function(options) {
+      this.caller = options.caller;
+      this.callee = options.callee;
+
       this.state = StateMachine.create({
         initial: 'ready',
         events: [
@@ -16,7 +19,6 @@
         ]
       });
 
-      this.start = this.state.start.bind(this.state);
       this.accept = this.state.accept.bind(this.state);
       this.hangup = this.state.hangup.bind(this.state);
     },
@@ -24,6 +26,12 @@
     _pc: null,
     _localStream: null,
     _remoteStream: null,
+
+    start: function() {
+      app.media.startPeerConnection(this.callee);
+      app.trigger("call", {callee: this.callee});
+      this.state.start();
+    },
 
     _onHangup: function(media) {
       media.closePeerConnection(this._pc, this._localStream,

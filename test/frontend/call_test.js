@@ -3,9 +3,17 @@ var expect = chai.expect;
 
 describe("Call", function() {
   var call;
+  var sandbox;
+  var callOptions = {caller: "caller", callee: "callee"};
 
   beforeEach(function() {
-    call = new app.models.Call();
+    sandbox = sinon.sandbox.create();
+    sandbox.stub(app.media, "startPeerConnection");
+    call = new app.models.Call(callOptions);
+  });
+
+  afterEach(function() {
+    sandbox.restore();
   });
 
   it("should have a state machine", function() {
@@ -14,6 +22,11 @@ describe("Call", function() {
 
   it("it should have an initial state", function() {
     expect(call.state.current).to.equal('ready');
+  });
+
+  it("should have a caller and a callee attribute", function() {
+    expect(call.caller).to.equal("caller");
+    expect(call.callee).to.equal("callee");
   });
 
   // XXX test that getting some event from view sets _localStream
@@ -35,6 +48,19 @@ describe("Call", function() {
       call.start();
       expect(call.start).to.Throw();
     });
+
+    it("should call startPeerConnection", function() {
+        call.start()
+        sinon.assert.calledOnce(app.media.startPeerConnection);
+        sinon.assert.calledWithExactly(app.media.startPeerConnection, "callee");
+    });
+
+    it("should trigger a call event on app", function() {
+      sandbox.stub(app, "trigger");
+      call.start();
+      sinon.assert.calledOnce(app.trigger);
+      sinon.assert.calledWithExactly(app.trigger, "call", {callee: "callee"});
+    });
   });
 
   describe("#accept", function() {
@@ -50,8 +76,8 @@ describe("Call", function() {
   describe("#hangup", function() {
 
     it("should change any state to terminated", function() {
-      var pending = new app.models.Call();
-      var ongoing = new app.models.Call();
+      var pending = new app.models.Call(callOptions);
+      var ongoing = new app.models.Call(callOptions);
 
       pending.start();
       ongoing.start();
