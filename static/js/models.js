@@ -6,6 +6,10 @@
   "use strict";
 
   app.models.Call = Backbone.Model.extend({
+      defaults: {
+          status: "ready"
+      },
+
     initialize: function(options) {
       this.caller = options.caller;
       this.callee = options.callee;
@@ -18,6 +22,11 @@
           {name: 'hangup', from: '*',       to: 'terminated'}
         ]
       });
+
+      this.state.onafterevent = function(event) {
+        this.set("status", event);
+        this.trigger(event);
+      }.bind(this);
 
       this.accept = this.state.accept.bind(this.state);
       this.hangup = this.state.hangup.bind(this.state);

@@ -16,18 +16,34 @@ describe("Call", function() {
     sandbox.restore();
   });
 
-  it("should have a state machine", function() {
-    expect(call.state).to.be.an.instanceOf(Object);
-  });
+    describe("initialize", function() {
 
-  it("it should have an initial state", function() {
-    expect(call.state.current).to.equal('ready');
-  });
+        it("should have a state machine", function() {
+            expect(call.state).to.be.an.instanceOf(Object);
+        });
 
-  it("should have a caller and a callee attribute", function() {
-    expect(call.caller).to.equal("caller");
-    expect(call.callee).to.equal("callee");
-  });
+        it("should have an initial state", function() {
+            expect(call.state.current).to.equal('ready');
+        });
+
+        it("should have an initial status", function() {
+            expect(call.get("status")).to.equal("ready");
+        });
+
+        it("should have a caller and a callee attribute", function() {
+            expect(call.caller).to.equal("caller");
+            expect(call.callee).to.equal("callee");
+        });
+
+        it("should trigger two events when the state change", function() {
+            sandbox.stub(call, "trigger");
+            call.start();
+            sinon.assert.calledThrice(call.trigger);
+            sinon.assert.calledWith(call.trigger, "start");
+            sinon.assert.calledWith(call.trigger, "change");
+            sinon.assert.calledWith(call.trigger, "change:status");
+        });
+    });
 
   // XXX test that getting some event from view sets _localStream
 

@@ -406,11 +406,10 @@
     },
 
     initialize: function(options) {
-      this.callee = options && options.callee;
-
       if (!(options && ('model' in options))) {
         throw new Error('No model passed to CallView.initialize()');
       }
+      this.model.on('change:status', this.render, this);
 
       app.trigger('hangup');
       this.local = $('#local-video').get(0);
@@ -457,27 +456,6 @@
     },
 
     /**
-     * Initiates the call.
-     */
-    initiate: function() {
-      app.trigger('call', {callee: this.callee});
-      app.media.startPeerConnection(
-        this.callee,
-
-        this.offer,
-
-        function onSuccess(pc) {
-          this.pc = pc;
-          this.$('.btn-hangup').removeClass('disabled');
-        }.bind(this),
-
-        function onError(err) {
-          app.utils.log(err);
-          app.utils.notifyUI('Unable to initiate call', 'error');
-        });
-    },
-
-    /**
      * Hangs up the call.
      */
     hangup: function(event) {
@@ -498,12 +476,13 @@
     },
 
     render: function() {
-      if (!app.data.user || !this.callee) {
+      if (!app.data.user || !this.model.callee) {
         this.$el.hide();
         return this;
       }
-      this.$('.callee').text(this.callee.get('nick'));
-      this.initiate();
+      this.$('.callee').text(this.model.callee.get('nick'));
+      if (this.model.state.is('ongoing'))
+        this.$('.btn-hangup').removeClass('disabled');
       this.$el.show();
       return this;
     }
