@@ -17,9 +17,10 @@
       this.state = StateMachine.create({
         initial: 'ready',
         events: [
-          {name: 'start',  from: 'ready',   to: 'pending'},
-          {name: 'accept', from: 'pending', to: 'ongoing'},
-          {name: 'hangup', from: '*',       to: 'terminated'}
+          {name: 'receiveIncomingNotification', from: 'ready',   to: 'pending'},
+          {name: 'sendOutGoigNotification',  from: 'ready',   to: 'pending'},
+          {name: 'acceptIncomingNotification', from: 'pending', to: 'ongoing'},
+          {name: 'terminateCall', from: '*',       to: 'terminated'}
         ]
       });
 

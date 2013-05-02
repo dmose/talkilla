@@ -15,7 +15,13 @@
       this.notifications = new app.views.NotificationsView();
       this.login = new app.views.LoginView();
       this.users = new app.views.UsersView();
-      this.call = new app.views.CallView({model: new app.models.Call()});
+      this.callview = new app.views.CallView({model: new app.models.Call()});
+
+      app.services.on('incoming_call', function(data) {
+          call = new Call();
+          this.notifications.incomingCall(call);
+      });
+
     },
 
     render: function() {
@@ -68,8 +74,9 @@
     },
 
     accept: function(event) {
-      /*
       event.preventDefault();
+      this.model.start();
+      /*
       var callView = app.router.view.call;
       callView.offer = this.model.get('offer');
       callView.callee = app.data.users.findWhere({

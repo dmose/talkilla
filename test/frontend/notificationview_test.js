@@ -4,9 +4,15 @@ var expect = chai.expect;
 var sandbox;
 
 describe("IncomingCallNotificationVierw", function() {
+    var call;
+    var event;
+    var notification;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
+    call = {start: sandbox.spy()};
+    event = {preventDefault: sandbox.spy()};
+    notification = new app.views.IncomingCallNotificationView({model: call});
   });
 
   afterEach(function() {
@@ -16,12 +22,17 @@ describe("IncomingCallNotificationVierw", function() {
   describe("#accept", function() {
 
     it("should call event.preventDefault", function(){
-      var notification = new app.views.IncomingCallNotificationView();
-      var event = {preventDefault: new sandbox.spy()};
-
       notification.accept(event);
       sinon.assert.calledOnce(event.preventDefault);
-      sinon.assert.calledWithExactly();
+      sinon.assert.calledWithExactly(event.preventDefault);
+    });
+
+    it("should start a call", function() {
+      var notification = new app.views.IncomingCallNotificationView({model: call});
+
+      notification.accept(event);
+      sinon.assert.calledOnce(call.start);
+      sinon.assert.calledWithExactly(call.start);
     });
   });
 });
