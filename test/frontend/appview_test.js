@@ -19,12 +19,41 @@ describe("AppView", function() {
       sandbox.restore();
     });
 
-    it("should initialize a call property", function() {
-      var appView = new app.views.AppView();
+  });
 
-      expect(appView.call).to.be.an.instanceOf(app.views.CallView);
+  describe("#createCall", function () {
+
+    beforeEach(function() {
+      sandbox = sinon.sandbox.create();
+      sandbox.stub(app.views, "NotificationsView");
+      sandbox.stub(app.views, "UsersView");
     });
 
+    afterEach(function() {
+      sandbox.restore();
+    });
+
+    it("should create a call property initialized to a new call model",
+      function() {
+        var appView = new app.views.AppView();
+
+        // XXX we should really test this in other places, both in the
+        // initialization method, and in whatever call cleanup method
+        // we write
+        expect(appView.call).to.equal(undefined);
+
+        sandbox.stub(app.models, "Call");
+        sandbox.stub(app.views, "CallView");
+        appView.createCall();
+
+        expect(appView.call).to.be.instanceOf(app.views.CallView);
+
+        sinon.assert.calledOnce(app.models.Call);
+        // XXX assert the model constructor should be created with caller
+        // and callee args
+        sinon.assert.calledOnce(app.views.CallView);
+        sinon.assert.calledWith(app.views.CallView, sinon.match.has("model"));
+      });
   });
 
 });

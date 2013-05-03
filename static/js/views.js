@@ -15,14 +15,11 @@
       this.notifications = new app.views.NotificationsView();
       this.login = new app.views.LoginView();
       this.users = new app.views.UsersView();
-      this.call = new app.views.CallView({model: new app.models.Call()});
+    },
 
-/*
-      app.services.on('create_call', function(data) {
-        this.call = new Call();
-        this.notifications.incomingCall(call);
-      });
-*/
+    createCall: function() {
+      var callModel = new app.models.Call();
+      this.call = new app.views.CallView({model: callModel});
     },
 
     render: function() {
