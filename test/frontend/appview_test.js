@@ -19,7 +19,7 @@ describe("AppView", function() {
       sandbox.restore();
     });
 
-    it("should add initialize a call property", function() {
+    it("should initialize a call property", function() {
       var appView = new app.views.AppView();
 
       expect(appView.call).to.be.an.instanceOf(app.views.CallView);

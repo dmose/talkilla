@@ -1,12 +1,10 @@
-/* global $, app, chai, describe, it, beforeEach, afterEach, sinon */
-var expect = chai.expect;
-
+/* global app, describe, it, beforeEach, afterEach, sinon */
 var sandbox;
 
 describe("IncomingCallNotificationVierw", function() {
-    var call;
-    var event;
-    var notification;
+  var call;
+  var event;
+  var notification;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
@@ -28,7 +26,8 @@ describe("IncomingCallNotificationVierw", function() {
     });
 
     it("should start a call", function() {
-      var notification = new app.views.IncomingCallNotificationView({model: call});
+      var notification = new app.views.IncomingCallNotificationView(
+        {model: call});
 
       notification.accept(event);
       sinon.assert.calledOnce(call.start);

@@ -16,34 +16,34 @@ describe("Call", function() {
     sandbox.restore();
   });
 
-    describe("initialize", function() {
+  describe("initialize", function() {
 
-        it("should have a state machine", function() {
-            expect(call.state).to.be.an.instanceOf(Object);
-        });
-
-        it("should have an initial state", function() {
-            expect(call.state.current).to.equal('ready');
-        });
-
-        it("should have an initial status", function() {
-            expect(call.get("status")).to.equal("ready");
-        });
-
-        it("should have a caller and a callee attribute", function() {
-            expect(call.caller).to.equal("caller");
-            expect(call.callee).to.equal("callee");
-        });
-
-        it("should trigger two events when the state change", function() {
-            sandbox.stub(call, "trigger");
-            call.start();
-            sinon.assert.calledThrice(call.trigger);
-            sinon.assert.calledWith(call.trigger, "start");
-            sinon.assert.calledWith(call.trigger, "change");
-            sinon.assert.calledWith(call.trigger, "change:status");
-        });
+    it("should have a state machine", function() {
+      expect(call.state).to.be.an.instanceOf(Object);
     });
+
+    it("should have an initial state", function() {
+      expect(call.state.current).to.equal('ready');
+    });
+
+    it("should have an initial status", function() {
+      expect(call.get("status")).to.equal("ready");
+    });
+
+    it("should have a caller and a callee attribute", function() {
+      expect(call.caller).to.equal("caller");
+      expect(call.callee).to.equal("callee");
+    });
+
+    it("should trigger two events when the state change", function() {
+      sandbox.stub(call, "trigger");
+      call.start();
+      sinon.assert.calledThrice(call.trigger);
+      sinon.assert.calledWith(call.trigger, "sendOutgoingCallRequest");
+      sinon.assert.calledWith(call.trigger, "change");
+      sinon.assert.calledWith(call.trigger, "change:status");
+    });
+  });
 
   // XXX test that getting some event from view sets _localStream
 
@@ -66,9 +66,9 @@ describe("Call", function() {
     });
 
     it("should call startPeerConnection", function() {
-        call.start()
-        sinon.assert.calledOnce(app.media.startPeerConnection);
-        sinon.assert.calledWithExactly(app.media.startPeerConnection, "callee");
+      call.start();
+      sinon.assert.calledOnce(app.media.startPeerConnection);
+      sinon.assert.calledWithExactly(app.media.startPeerConnection, "callee");
     });
 
     it("should trigger a call event on app", function() {

@@ -63,14 +63,14 @@ describe("CallView", function() {
     it('should trigger a hangup event on the model');
   });
 
-    describe("#render", function() {
-        it("should render every time the model change its state", function() {
-            var callModel = new app.models.Call({});
-            sandbox.stub(app.views.CallView.prototype, "render");
-            callView = new app.views.CallView({model: callModel});
-            callModel.trigger("change:status");
-            sinon.assert.calledOnce(callView.render);
-        });
+  describe("#render", function() {
+    it("should render every time the model change its state", function() {
+      var callModel = new app.models.Call({});
+      sandbox.stub(app.views.CallView.prototype, "render");
+      callView = new app.views.CallView({model: callModel});
+      callModel.trigger("change:status");
+      sinon.assert.calledOnce(callView.render);
     });
+  });
 
 });

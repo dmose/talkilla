@@ -6,9 +6,9 @@
   "use strict";
 
   app.models.Call = Backbone.Model.extend({
-      defaults: {
-          status: "ready"
-      },
+    defaults: {
+      status: "ready"
+    },
 
     initialize: function(options) {
       this.caller = options.caller;
@@ -17,10 +17,10 @@
       this.state = StateMachine.create({
         initial: 'ready',
         events: [
-          {name: 'receiveIncomingNotification', from: 'ready',   to: 'pending'},
-          {name: 'sendOutGoigNotification',  from: 'ready',   to: 'pending'},
-          {name: 'acceptIncomingNotification', from: 'pending', to: 'ongoing'},
-          {name: 'terminateCall', from: '*',       to: 'terminated'}
+          {name: 'presentIncomingCallRequest', from: 'ready',   to: 'pending'},
+          {name: 'sendOutgoingCallRequest',  from: 'ready',   to: 'pending'},
+          {name: 'acceptIncomingCall', from: 'pending', to: 'ongoing'},
+          {name: 'hangup', from: '*', to: 'terminated'}
         ]
       });
 
@@ -29,7 +29,7 @@
         this.trigger(event);
       }.bind(this);
 
-      this.accept = this.state.accept.bind(this.state);
+      this.accept = this.state.acceptIncomingCall.bind(this.state);
       this.hangup = this.state.hangup.bind(this.state);
     },
 
@@ -40,7 +40,7 @@
     start: function() {
       app.media.startPeerConnection(this.callee);
       app.trigger("call", {callee: this.callee});
-      this.state.start();
+      this.state.sendOutgoingCallRequest();
     },
 
     _onHangup: function(media) {
@@ -56,8 +56,8 @@
 
   app.models.IncomingCall = Backbone.Model.extend({
     defaults: {callee: undefined,
-               caller: undefined,
-               offer: {}}
+      caller: undefined,
+      offer: {}}
   });
 
   app.models.PendingCall = Backbone.Model.extend({
