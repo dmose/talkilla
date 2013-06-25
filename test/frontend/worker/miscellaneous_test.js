@@ -122,4 +122,25 @@ describe('Miscellaneous', function() {
           ]);
         });
   });
+
+  describe("DatabaseUpgrader", function() {
+
+    describe("upgradeDatabase", function() {
+      it("should determine the version of the existing database");
+      it("should incrementally apply transforms for each intervening version");
+      it("should leave the database in a coherent state if an error occurs");
+      it("should post a message to the app threads upon finishing");
+    });
+
+    describe("upgraders[0]", function() {
+      it("should create a database from scratch with version 1");
+      it("should create an object store for contacts");
+      it("should create a unique username index called 'username'");
+    });
+
+    describe("upgraders[1]", function() {
+      // XXX
+    });
+  });
+  
 });
