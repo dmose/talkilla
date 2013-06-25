@@ -86,7 +86,8 @@ describe('Miscellaneous', function() {
 
   describe("storeContact", function() {
     afterEach(function() {
-      contactsDb.close();
+      if (contactsDb)
+        contactsDb.close();
       contactsDb = undefined;
       contacts = undefined;
       indexedDB.deleteDatabase(contactDBName);
@@ -130,6 +131,7 @@ describe('Miscellaneous', function() {
       it("should incrementally apply transforms for each intervening version");
       it("should leave the database in a coherent state if an error occurs");
       it("should post a message to the app threads upon finishing");
+      it('should handle a future version gracefully');
     });
 
     describe("upgraders[0]", function() {
@@ -142,5 +144,5 @@ describe('Miscellaneous', function() {
       // XXX
     });
   });
-  
+
 });
