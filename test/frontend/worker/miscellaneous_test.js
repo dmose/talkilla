@@ -2,7 +2,7 @@
    it, sinon, _config:true, loadconfig, _signinCallback,
    _currentUserData:true, UserData, DatabaseUpgrader, getContactsDatabase,
    storeContact, contacts:true, contactsDb:true, indexedDB,
-   updateCurrentUsers, currentUsers, _ */
+   updateCurrentUsers, currentUsers, DOMError, _ */
 var expect = chai.expect;
 var contactDBName = "TalkillaContactsUnitTest";
 
@@ -162,6 +162,18 @@ describe('Miscellaneous', function() {
         expect(dbu.onUpgradeSuccess).to.equal(successCallback);
       });
 
+    it("should throw an Error if errorCallback function not passed",
+      function() {
+        expect(function() {
+          new DatabaseUpgrader(contactDBName, successCallback);
+        }).to.Throw(Error);
+      });
+
+    it("should attach the errorCallback to the onUpgradeError proprerty",
+      function() {
+        expect(dbu.onUpgradeError).to.equal(errorCallback);
+      });
+
     describe("#startUpgrade", function() {
       beforeEach(function() {
         dbu.startUpgrade();
@@ -195,7 +207,7 @@ describe('Miscellaneous', function() {
     });
 
     describe("#_onOpenSuccess", function() {
-      it("should fire the onupgradesuccess callback",
+      it("should fire the onUpgradeSuccess callback",
         function() {
           sandbox.stub(dbu, "onUpgradeSuccess");
 
@@ -211,13 +223,33 @@ describe('Miscellaneous', function() {
           var callbackStub = sandbox.stub(dbu, "onUpgradeSuccess");
           callbackStub.throws();
 
-          expect(function() { dbu._onOpenSuccess(); } ).to.not.Throw();
+          expect(dbu._onOpenSuccess).to.not.Throw();
           sinon.assert.calledOnce(console.log);
         });
     });
 
     describe("#_onOpenError", function() {
-      // XXX
+      it("should fire the onUpgradeError callback with the event error",
+        function() {
+          sandbox.stub(dbu, "onUpgradeError");
+          var errType = DOMError.AbortError;
+          var fakeEvent = { target: { error: errType} };
+
+          dbu._onOpenError(fakeEvent);
+
+          sinon.assert.calledOnce(dbu.onUpgradeError);
+          sinon.assert.calledWithExactly(dbu.onUpgradeError, errType);
+        });
+
+      it("should log but not propagate exceptions thrown by onUpgradeError",
+        function() {
+          sandbox.stub(window.console, "log");
+          var callbackStub = sandbox.stub(dbu, "onUpgradeError");
+          callbackStub.throws();
+
+          expect(dbu._onOpenError).to.not.Throw();
+          sinon.assert.calledOnce(console.log);
+        });
     });
 
     // XXX describe("#_onOpenBlocked");
