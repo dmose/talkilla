@@ -126,9 +126,11 @@ describe('Miscellaneous', function() {
 
   describe("DatabaseUpgrader", function() {
     var dbu;
+    function successCallback() {}
+    function errorCallback() {}
 
     beforeEach(function() {
-      dbu = new DatabaseUpgrader(contactDBName);
+      dbu = new DatabaseUpgrader(contactDBName, successCallback, errorCallback);
       var stubOpen = sandbox.stub(window.indexedDB, "open");
       stubOpen.returns({}); // dummy request object
     });
@@ -137,9 +139,28 @@ describe('Miscellaneous', function() {
       dbu = undefined;
     });
 
+    it("should throw an Error if dbName arg is not passed",
+      function() {
+        expect(function() {
+          new DatabaseUpgrader();
+        }).to.Throw(Error);
+      });
+
     it("should initialize the _dbName property to the name", function() {
       expect(dbu._dbName).to.equal(contactDBName);
     });
+
+    it("should throw an Error if successCallback function not passed",
+      function() {
+        expect(function() {
+          new DatabaseUpgrader(contactDBName);
+        }).to.Throw(Error);
+      });
+
+    it("should attach the successCallback to the onUpgradeSuggess proprerty",
+      function() {
+        expect(dbu.onUpgradeSuccess).to.equal(successCallback);
+      });
 
     describe("#startUpgrade", function() {
       beforeEach(function() {
@@ -173,6 +194,33 @@ describe('Miscellaneous', function() {
       });
     });
 
+    describe("#_onOpenSuccess", function() {
+      it("should fire the onupgradesuccess callback",
+        function() {
+          sandbox.stub(dbu, "onUpgradeSuccess");
+
+          dbu._onOpenSuccess();
+
+          sinon.assert.calledOnce(dbu.onUpgradeSuccess);
+          sinon.assert.calledWithExactly(dbu.onUpgradeSuccess);
+        });
+
+      it("should log but not propagate exceptions thrown by onUpgradeSuccess",
+        function() {
+          sandbox.stub(window.console, "log");
+          var callbackStub = sandbox.stub(dbu, "onUpgradeSuccess");
+          callbackStub.throws();
+
+          expect(function() { dbu._onOpenSuccess(); } ).to.not.Throw();
+          sinon.assert.calledOnce(console.log);
+        });
+    });
+
+    describe("#_onOpenError", function() {
+      // XXX
+    });
+
+    // XXX describe("#_onOpenBlocked");
     describe("#_upgrade", function() {
       it("should incrementally apply transforms for each intervening version");
       it("should leave the database in a coherent state if an error occurs");

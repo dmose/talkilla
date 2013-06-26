@@ -16,10 +16,17 @@ function openChatWindow() {
   browserPort.postEvent('social.request-chat', 'chat.html');
 }
 
-function DatabaseUpgrader(dbName) {
+function DatabaseUpgrader(dbName, successCallback) {
   "use strict";
 
+  if (!dbName || typeof dbName !== "string")
+    throw new Error("first arg must be a string");
   this._dbName = dbName;
+
+  if (!successCallback || typeof successCallback !== "function")
+    throw new Error("second arg must be a success callback function");
+  this.onUpgradeSuccess = successCallback;
+
 }
 DatabaseUpgrader.prototype = {
   _latestVersion: 2,
@@ -35,14 +42,21 @@ DatabaseUpgrader.prototype = {
     this._openRequest.onupgradeneeded = this._upgrade;
   },
 
+  _onOpenSuccess: function() {
+    "use strict";
+    try {
+      this.onUpgradeSuccess();
+    } catch (ex) {
+      console.log("DatabaseUpgrade success callback threw: " + ex);
+    }
+  },
+
   _onOpenError: function() {
+    "use strict";
 
   },
 
   _onUpgradeNeeded: function() {
-
-  },
-  _onOpenSuccess: function() {
 
   },
 
@@ -52,7 +66,7 @@ DatabaseUpgrader.prototype = {
 
   _upgrade: function() {
 
-  },
+  }
 
 };
 
