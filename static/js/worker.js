@@ -22,10 +22,38 @@ function DatabaseUpgrader(dbName) {
   this._dbName = dbName;
 }
 DatabaseUpgrader.prototype = {
+  _latestVersion: 2,
+
   startUpgrade: function() {
     "use strict";
-    window.indexedDB.open(this._dbName);
-  }
+    this._openRequest = window.indexedDB.open(this._dbName,
+      this._latestVersion);
+
+    this._openRequest.onsuccess = this._onOpenSuccess;
+    this._openRequest.onerror = this._onOpenError;
+    this._openRequest.onblocked = this._onOpenBlocked;
+    this._openRequest.onupgradeneeded = this._upgrade;
+  },
+
+  _onOpenError: function() {
+
+  },
+
+  _onUpgradeNeeded: function() {
+
+  },
+  _onOpenSuccess: function() {
+
+  },
+
+  _onOpenBlocked: function() {
+
+  },
+
+  _upgrade: function() {
+
+  },
+
 };
 
 function getContactsDatabase(doneCallback, contactDBName) {

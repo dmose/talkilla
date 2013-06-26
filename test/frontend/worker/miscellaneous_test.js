@@ -1,6 +1,6 @@
 /* global afterEach, beforeEach, chai, describe,
    it, sinon, _config:true, loadconfig, _signinCallback,
-   _currentUserData:true, UserData, getContactsDatabase,
+   _currentUserData:true, UserData, DatabaseUpgrader, getContactsDatabase,
    storeContact, contacts:true, contactsDb:true, indexedDB,
    updateCurrentUsers, currentUsers, _ */
 var expect = chai.expect;
@@ -125,27 +125,55 @@ describe('Miscellaneous', function() {
   });
 
   describe("DatabaseUpgrader", function() {
+    var dbu;
+
+    beforeEach(function() {
+      dbu = new DatabaseUpgrader(contactDBName);
+      var stubOpen = sandbox.stub(window.indexedDB, "open");
+      stubOpen.returns({}); // dummy request object
+    });
+
+    afterEach(function() {
+      dbu = undefined;
+    });
+
     it("should initialize the _dbName property to the name", function() {
-      var dbu = new DatabaseUpgrader(contactDBName);
       expect(dbu._dbName).to.equal(contactDBName);
     });
 
     describe("#startUpgrade", function() {
-      it("should open the database", function() {
-        var dbu = new DatabaseUpgrader(contactDBName);
-        sandbox.stub(window.indexedDB, "open");
+      beforeEach(function() {
         dbu.startUpgrade();
-        sinon.assert.calledOnce(window.indexedDB.open);
-        sinon.assert.calledWithExactly(window.indexedDB.open, contactDBName);
       });
 
-      it("should set this._openRequest to something or other");
+      afterEach(function() {
+      });
+
+      it("should attempt to open the database with the latest version",
+        function() {
+          sinon.assert.calledOnce(window.indexedDB.open);
+          sinon.assert.calledWithExactly(window.indexedDB.open,
+            contactDBName, dbu._latestVersion);
+        });
+
+      it("should attach _onOpenSuccess to the open request", function() {
+        expect(dbu._openRequest.onsuccess).to.equal(dbu._onOpenSuccess);
+      });
+
+      it("should attach _onOpenError to the open request", function() {
+        expect(dbu._openRequest.onerror).to.equal(dbu._onOpenError);
+      });
+
+      it("should attach _onOpenBlocked to the open request", function() {
+        expect(dbu._openRequest.onblocked).to.equal(dbu._onOpenBlocked);
+      });
+
+      it("should attach _upgrade to the open request", function() {
+        expect(dbu._openRequest.onupgradeneeded).to.equal(dbu._upgrade);
+      });
     });
 
-
-
-
-    describe("#onupgradeneeded", function() {
+    describe("#_upgrade", function() {
       it("should incrementally apply transforms for each intervening version");
       it("should leave the database in a coherent state if an error occurs");
       it("should post a message to the app threads upon finishing");
