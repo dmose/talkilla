@@ -125,9 +125,27 @@ describe('Miscellaneous', function() {
   });
 
   describe("DatabaseUpgrader", function() {
+    it("should initialize the _dbName property to the name", function() {
+      var dbu = new DatabaseUpgrader(contactDBName);
+      expect(dbu._dbName).to.equal(contactDBName);
+    });
 
-    describe("upgradeDatabase", function() {
-      it("should determine the version of the existing database");
+    describe("#startUpgrade", function() {
+      it("should open the database", function() {
+        var dbu = new DatabaseUpgrader(contactDBName);
+        sandbox.stub(window.indexedDB, "open");
+        dbu.startUpgrade();
+        sinon.assert.calledOnce(window.indexedDB.open);
+        sinon.assert.calledWithExactly(window.indexedDB.open, contactDBName);
+      });
+
+      it("should set this._openRequest to something or other");
+    });
+
+
+
+
+    describe("#onupgradeneeded", function() {
       it("should incrementally apply transforms for each intervening version");
       it("should leave the database in a coherent state if an error occurs");
       it("should post a message to the app threads upon finishing");

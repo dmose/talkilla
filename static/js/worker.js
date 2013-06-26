@@ -16,6 +16,18 @@ function openChatWindow() {
   browserPort.postEvent('social.request-chat', 'chat.html');
 }
 
+function DatabaseUpgrader(dbName) {
+  "use strict";
+
+  this._dbName = dbName;
+}
+DatabaseUpgrader.prototype = {
+  startUpgrade: function() {
+    "use strict";
+    window.indexedDB.open(this._dbName);
+  }
+};
+
 function getContactsDatabase(doneCallback, contactDBName) {
   var kDBVersion = 1;
   contactDBName = contactDBName || "TalkillaContacts";
