@@ -195,8 +195,8 @@ describe('Miscellaneous', function() {
 
           expect(stubDbu._upgraders).to.be.an.instanceOf(Array);
           expect(stubDbu._upgraders).to.have.length(stubDbu._latestVersion);
-          stubDbu._upgraders.forEach(function(val, index, arrayRef) {
-            expect(val).to.be.an.instanceOf(Function);
+          stubDbu._upgraders.forEach(function(f) {
+            expect(f).to.be.an.instanceOf(Function);
           });
         });
     });

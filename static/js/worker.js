@@ -70,7 +70,7 @@ DatabaseUpgrader.prototype = {
   },
 
   _applyUpgrades: function() {
-    "use strict;"
+    "use strict";
   },
 
   _initializeUpgraders: function() {
