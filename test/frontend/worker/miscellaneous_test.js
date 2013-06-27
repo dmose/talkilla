@@ -174,6 +174,33 @@ describe('Miscellaneous', function() {
         expect(dbu.onUpgradeError).to.equal(errorCallback);
       });
 
+    it("should call #_initializeUpgraders",
+      function() {
+        var stub = sandbox.stub(DatabaseUpgrader.prototype,
+          "_initializeUpgraders");
+
+        new DatabaseUpgrader(contactDBName, successCallback, errorCallback);
+
+        sinon.assert.calledOnce(stub);
+        sinon.assert.calledWithExactly(stub);
+      });
+
+    describe("#_initializeUpgraders", function() {
+      it("should set #_upgraders to an array of _latestVersion functions",
+        function() {
+          var stubDbu = sinon.createStubInstance(DatabaseUpgrader);
+          stubDbu._initializeUpgraders = dbu._initializeUpgraders;
+
+          stubDbu._initializeUpgraders();
+
+          expect(stubDbu._upgraders).to.be.an.instanceOf(Array);
+          expect(stubDbu._upgraders).to.have.length(stubDbu._latestVersion);
+          stubDbu._upgraders.forEach(function(val, index, arrayRef) {
+            expect(val).to.be.an.instanceOf(Function);
+          });
+        });
+    });
+
     describe("#startUpgrade", function() {
       beforeEach(function() {
         dbu.startUpgrade();
@@ -258,9 +285,16 @@ describe('Miscellaneous', function() {
     });
 
     describe("#_applyUpgrades", function() {
-      it("should apply an upgrade for each version change between old and new");
+      it("should apply an upgrade for each version change between old and new",
+        function() {
+          dbu.startUpgrade();
+
+          // XXX
+        });
 
       it("should apply all upgrades as part of a single transaction");
+
+      // XXX test/refactor fireCallback
 
       it("should fire this.onUpgradeError callback if any upgrader fails");
 

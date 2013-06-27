@@ -30,6 +30,8 @@ function DatabaseUpgrader(dbName, successCallback, errorCallback) {
   if (!errorCallback || typeof errorCallback !== "function")
     throw new Error("second arg must be an error callback function");
   this.onUpgradeError = errorCallback;
+
+  this._initializeUpgraders();
 }
 DatabaseUpgrader.prototype = {
   _latestVersion: 2,
@@ -63,18 +65,29 @@ DatabaseUpgrader.prototype = {
     }
   },
 
-  _onUpgradeNeeded: function() {
-
-  },
-
   _onOpenBlocked: function() {
-
+    "use strict";
   },
 
   _applyUpgrades: function() {
+    "use strict;"
+  },
 
+  _initializeUpgraders: function() {
+    "use strict";
+    this._upgraders = [];
+    this._upgraders[0] = this._createDb;
+    this._upgraders[1] = this._upgrade1to2;
+  },
+
+  _createDb: function() {
+    "use strict";
+
+  },
+
+  _upgrade1to2: function() {
+    "use strict";
   }
-
 };
 
 function getContactsDatabase(doneCallback, contactDBName) {
