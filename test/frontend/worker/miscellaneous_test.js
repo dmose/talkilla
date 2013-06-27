@@ -202,7 +202,7 @@ describe('Miscellaneous', function() {
       });
 
       it("should attach _upgrade to the open request", function() {
-        expect(dbu._openRequest.onupgradeneeded).to.equal(dbu._upgrade);
+        expect(dbu._openRequest.onupgradeneeded).to.equal(dbu._applyUpgrades);
       });
     });
 
@@ -252,21 +252,33 @@ describe('Miscellaneous', function() {
         });
     });
 
-    // XXX describe("#_onOpenBlocked");
-    describe("#_upgrade", function() {
-      it("should incrementally apply transforms for each intervening version");
-      it("should leave the database in a coherent state if an error occurs");
-      it("should post a message to the app threads upon finishing");
-      it('should handle a future version gracefully');
+    describe("#_onOpenBlocked", function() {
+      // XXX need to decide on behavior before landing
+      it("should execute some yet-to-be-defined behavior!");
     });
 
-    describe("upgraders[0]", function() {
+    describe("#_applyUpgrades", function() {
+      it("should apply an upgrade for each version change between old and new");
+
+      it("should apply all upgrades as part of a single transaction");
+
+      it("should fire this.onUpgradeError callback if any upgrader fails");
+
+      it("should fire this.onSuccessCallback if all upgraders succeed");
+
+      // XXX does this makes sense
+      it('should handle a future version gracefully');
+
+      // XXX other failures to test for?
+    });
+
+    describe("#_upgrades[0]", function() {
       it("should create a database from scratch with version 1");
       it("should create an object store for contacts");
       it("should create a unique username index called 'username'");
     });
 
-    describe("upgraders[1]", function() {
+    describe("#_upgrades[1]", function() {
       // XXX
     });
   });

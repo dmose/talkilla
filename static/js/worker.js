@@ -42,7 +42,7 @@ DatabaseUpgrader.prototype = {
     this._openRequest.onsuccess = this._onOpenSuccess;
     this._openRequest.onerror = this._onOpenError;
     this._openRequest.onblocked = this._onOpenBlocked;
-    this._openRequest.onupgradeneeded = this._upgrade;
+    this._openRequest.onupgradeneeded = this._applyUpgrades;
   },
 
   _onOpenSuccess: function() {
@@ -71,7 +71,7 @@ DatabaseUpgrader.prototype = {
 
   },
 
-  _upgrade: function() {
+  _applyUpgrades: function() {
 
   }
 
