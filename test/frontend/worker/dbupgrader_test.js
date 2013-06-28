@@ -171,6 +171,8 @@ describe("DatabaseUpgrader", function() {
     it("should execute some yet-to-be-defined behavior!");
   });
 
+  // XXX this upgrade API (and all impls) are going to need to become
+  // async as soon as we have a need to migrate data in some interesting way
   describe("#_applyUpgrades", function() {
     it("should apply an upgrade for each version change between old and new",
       function() {
@@ -193,10 +195,10 @@ describe("DatabaseUpgrader", function() {
     // XXX other failures to test for?
   });
 
-  describe("#_upgrades[0]", function() {
-    it("should create a database from scratch with version 1");
-    it("should create an object store for contacts");
-    it("should create a unique username index called 'username'");
+  describe("#_initialize1", function() {
+    it("should create an ObjectStore with a keyPath of 'username'");
+    it("should create an unique index named username on the username key");
+    it("should handle a ConstraintError cleanly");
   });
 
   describe("#_upgrades[1]", function() {

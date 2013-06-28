@@ -76,11 +76,11 @@ DatabaseUpgrader.prototype = {
   _initializeUpgraders: function() {
     "use strict";
     this._upgraders = [];
-    this._upgraders[0] = this._createDb;
+    this._upgraders[0] = this._initialize1;
     this._upgraders[1] = this._upgrade1to2;
   },
 
-  _createDb: function() {
+  _initialize1: function() {
     "use strict";
 
   },
