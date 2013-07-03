@@ -76,11 +76,11 @@ describe("DatabaseModel", function() {
   });
 
   describe("#_onOpenSuccess", function() {
-    it("should fire the onUpgradeSuccess callback");
+    it("should fire the XXX callback");
   });
 
   describe("#_onOpenError", function() {
-    it("should fire the onUpgradeError callback");
+    it("should fire the XXX callback");
   });
 
   describe("#_onOpenBlocked", function() {
@@ -89,6 +89,6 @@ describe("DatabaseModel", function() {
   });
 
   describe("#fetchRecentMessages", function() {
-    it("should callb")
-  })
+    // XXX
+  });
 });
