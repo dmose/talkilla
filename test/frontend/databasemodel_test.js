@@ -1,5 +1,5 @@
-/* global afterEach, beforeEach, chai, describe, it, sinon, DatabaseModel,
- DOMError */
+/* global afterEach, beforeEach, chai, describe, it, sinon,
+   app */
 
 var expect = chai.expect;
 var contactDBName = "TalkillaContactsUnitTest";
@@ -9,13 +9,11 @@ describe("DatabaseModel", function() {
 
   var sandbox;
   var model;
-  function successCallback() {}
-  function errorCallback() {}
 
   beforeEach(function() {
     sandbox = sinon.sandbox.create();
 
-    model = new DatabaseModel(contactDBName, successCallback, errorCallback);
+    model = new app.models.DatabaseModel( {dbName: contactDBName} );
 
     var stubOpen = sandbox.stub(window.indexedDB, "open");
     stubOpen.returns({}); // dummy request object
@@ -26,39 +24,14 @@ describe("DatabaseModel", function() {
     model = undefined;
   });
 
-  it("should throw an Error if dbName arg is not passed",
-    function() {
-      expect(function() {
-        new DatabaseModel();
-      }).to.Throw(Error);
-    });
-
-  it("should initialize the _dbName property to the name", function() {
+  it("should initialize the _dbName property to options._dbName", function() {
     expect(model._dbName).to.equal(contactDBName);
   });
 
-  it("should throw an Error if successCallback function not passed",
+  it("should set _dbName to 'contacts' if dbName option not passed",
     function() {
-      expect(function() {
-        new DatabaseModel(contactDBName);
-      }).to.Throw(Error);
-    });
-
-  it("should attach the successCallback to the onUpgradeSuggess proprerty",
-    function() {
-      expect(model.onUpgradeSuccess).to.equal(successCallback);
-    });
-
-  it("should throw an Error if errorCallback function not passed",
-    function() {
-      expect(function() {
-        new DatabaseModel(contactDBName, successCallback);
-      }).to.Throw(Error);
-    });
-
-  it("should attach the errorCallback to the onUpgradeError proprerty",
-    function() {
-      expect(model.onUpgradeError).to.equal(errorCallback);
+      var model = new app.models.DatabaseModel();
+      expect(model._dbName).to.equal('contacts');
     });
 
   describe("#openDatabase", function() {
@@ -103,49 +76,11 @@ describe("DatabaseModel", function() {
   });
 
   describe("#_onOpenSuccess", function() {
-    it("should fire the onUpgradeSuccess callback",
-      function() {
-        sandbox.stub(model, "onUpgradeSuccess");
-
-        model._onOpenSuccess();
-
-        sinon.assert.calledOnce(model.onUpgradeSuccess);
-        sinon.assert.calledWithExactly(model.onUpgradeSuccess);
-      });
-
-    it("should log but not propagate exceptions thrown by onUpgradeSuccess",
-      function() {
-        sandbox.stub(window.console, "log");
-        var callbackStub = sandbox.stub(model, "onUpgradeSuccess");
-        callbackStub.throws();
-
-        expect(model._onOpenSuccess).to.not.Throw();
-        sinon.assert.calledOnce(console.log);
-      });
+    it("should fire the onUpgradeSuccess callback");
   });
 
   describe("#_onOpenError", function() {
-    it("should fire the onUpgradeError callback with the event error",
-      function() {
-        sandbox.stub(model, "onUpgradeError");
-        var errType = DOMError.AbortError;
-        var fakeEvent = { target: { error: errType} };
-
-        model._onOpenError(fakeEvent);
-
-        sinon.assert.calledOnce(model.onUpgradeError);
-        sinon.assert.calledWithExactly(model.onUpgradeError, errType);
-      });
-
-    it("should log but not propagate exceptions thrown by onUpgradeError",
-      function() {
-        sandbox.stub(window.console, "log");
-        var callbackStub = sandbox.stub(model, "onUpgradeError");
-        callbackStub.throws();
-
-        expect(model._onOpenError).to.not.Throw();
-        sinon.assert.calledOnce(console.log);
-      });
+    it("should fire the onUpgradeError callback");
   });
 
   describe("#_onOpenBlocked", function() {
@@ -153,4 +88,7 @@ describe("DatabaseModel", function() {
     it("should execute some yet-to-be-defined behavior!");
   });
 
+  describe("#fetchRecentMessages", function() {
+    it("should callb")
+  })
 });
