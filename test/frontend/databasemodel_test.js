@@ -1,21 +1,21 @@
-/* global afterEach, beforeEach, chai, describe, it, sinon, DatabaseUpgrader,
+/* global afterEach, beforeEach, chai, describe, it, sinon, DatabaseModel,
  DOMError */
 
 var expect = chai.expect;
 var contactDBName = "TalkillaContactsUnitTest";
 
-describe("DatabaseUpgrader", function() {
+describe("DatabaseModel", function() {
   "use strict";
 
   var sandbox;
-  var dbu;
+  var model;
   function successCallback() {}
   function errorCallback() {}
 
   beforeEach(function() {
     sandbox = sinon.sandbox.create();
 
-    dbu = new DatabaseUpgrader(contactDBName, successCallback, errorCallback);
+    model = new DatabaseModel(contactDBName, successCallback, errorCallback);
 
     var stubOpen = sandbox.stub(window.indexedDB, "open");
     stubOpen.returns({}); // dummy request object
@@ -23,50 +23,50 @@ describe("DatabaseUpgrader", function() {
 
   afterEach(function() {
     sandbox.restore();
-    dbu = undefined;
+    model = undefined;
   });
 
   it("should throw an Error if dbName arg is not passed",
     function() {
       expect(function() {
-        new DatabaseUpgrader();
+        new DatabaseModel();
       }).to.Throw(Error);
     });
 
   it("should initialize the _dbName property to the name", function() {
-    expect(dbu._dbName).to.equal(contactDBName);
+    expect(model._dbName).to.equal(contactDBName);
   });
 
   it("should throw an Error if successCallback function not passed",
     function() {
       expect(function() {
-        new DatabaseUpgrader(contactDBName);
+        new DatabaseModel(contactDBName);
       }).to.Throw(Error);
     });
 
   it("should attach the successCallback to the onUpgradeSuggess proprerty",
     function() {
-      expect(dbu.onUpgradeSuccess).to.equal(successCallback);
+      expect(model.onUpgradeSuccess).to.equal(successCallback);
     });
 
   it("should throw an Error if errorCallback function not passed",
     function() {
       expect(function() {
-        new DatabaseUpgrader(contactDBName, successCallback);
+        new DatabaseModel(contactDBName, successCallback);
       }).to.Throw(Error);
     });
 
   it("should attach the errorCallback to the onUpgradeError proprerty",
     function() {
-      expect(dbu.onUpgradeError).to.equal(errorCallback);
+      expect(model.onUpgradeError).to.equal(errorCallback);
     });
 
   it("should call #_initializeUpgraders",
     function() {
-      var stub = sandbox.stub(DatabaseUpgrader.prototype,
+      var stub = sandbox.stub(DatabaseModel.prototype,
         "_initializeUpgraders");
 
-      new DatabaseUpgrader(contactDBName, successCallback, errorCallback);
+      new DatabaseModel(contactDBName, successCallback, errorCallback);
 
       sinon.assert.calledOnce(stub);
       sinon.assert.calledWithExactly(stub);
@@ -75,8 +75,8 @@ describe("DatabaseUpgrader", function() {
   describe("#_initializeUpgraders", function() {
     it("should set #_upgraders to an array of _latestVersion functions",
       function() {
-        var stubDbu = sinon.createStubInstance(DatabaseUpgrader);
-        stubDbu._initializeUpgraders = dbu._initializeUpgraders;
+        var stubDbu = sinon.createStubInstance(DatabaseModel);
+        stubDbu._initializeUpgraders = model._initializeUpgraders;
 
         stubDbu._initializeUpgraders();
 
@@ -90,7 +90,7 @@ describe("DatabaseUpgrader", function() {
 
   describe("#startUpgrade", function() {
     beforeEach(function() {
-      dbu.startUpgrade();
+      model.startUpgrade();
     });
 
     afterEach(function() {
@@ -100,44 +100,44 @@ describe("DatabaseUpgrader", function() {
       function() {
         sinon.assert.calledOnce(window.indexedDB.open);
         sinon.assert.calledWithExactly(window.indexedDB.open,
-          contactDBName, dbu._latestVersion);
+          contactDBName, model._latestVersion);
       });
 
     it("should attach _onOpenSuccess to the open request", function() {
-      expect(dbu._openRequest.onsuccess).to.equal(dbu._onOpenSuccess);
+      expect(model._openRequest.onsuccess).to.equal(model._onOpenSuccess);
     });
 
     it("should attach _onOpenError to the open request", function() {
-      expect(dbu._openRequest.onerror).to.equal(dbu._onOpenError);
+      expect(model._openRequest.onerror).to.equal(model._onOpenError);
     });
 
     it("should attach _onOpenBlocked to the open request", function() {
-      expect(dbu._openRequest.onblocked).to.equal(dbu._onOpenBlocked);
+      expect(model._openRequest.onblocked).to.equal(model._onOpenBlocked);
     });
 
     it("should attach _upgrade to the open request", function() {
-      expect(dbu._openRequest.onupgradeneeded).to.equal(dbu._applyUpgrades);
+      expect(model._openRequest.onupgradeneeded).to.equal(model._applyUpgrades);
     });
   });
 
   describe("#_onOpenSuccess", function() {
     it("should fire the onUpgradeSuccess callback",
       function() {
-        sandbox.stub(dbu, "onUpgradeSuccess");
+        sandbox.stub(model, "onUpgradeSuccess");
 
-        dbu._onOpenSuccess();
+        model._onOpenSuccess();
 
-        sinon.assert.calledOnce(dbu.onUpgradeSuccess);
-        sinon.assert.calledWithExactly(dbu.onUpgradeSuccess);
+        sinon.assert.calledOnce(model.onUpgradeSuccess);
+        sinon.assert.calledWithExactly(model.onUpgradeSuccess);
       });
 
     it("should log but not propagate exceptions thrown by onUpgradeSuccess",
       function() {
         sandbox.stub(window.console, "log");
-        var callbackStub = sandbox.stub(dbu, "onUpgradeSuccess");
+        var callbackStub = sandbox.stub(model, "onUpgradeSuccess");
         callbackStub.throws();
 
-        expect(dbu._onOpenSuccess).to.not.Throw();
+        expect(model._onOpenSuccess).to.not.Throw();
         sinon.assert.calledOnce(console.log);
       });
   });
@@ -145,23 +145,23 @@ describe("DatabaseUpgrader", function() {
   describe("#_onOpenError", function() {
     it("should fire the onUpgradeError callback with the event error",
       function() {
-        sandbox.stub(dbu, "onUpgradeError");
+        sandbox.stub(model, "onUpgradeError");
         var errType = DOMError.AbortError;
         var fakeEvent = { target: { error: errType} };
 
-        dbu._onOpenError(fakeEvent);
+        model._onOpenError(fakeEvent);
 
-        sinon.assert.calledOnce(dbu.onUpgradeError);
-        sinon.assert.calledWithExactly(dbu.onUpgradeError, errType);
+        sinon.assert.calledOnce(model.onUpgradeError);
+        sinon.assert.calledWithExactly(model.onUpgradeError, errType);
       });
 
     it("should log but not propagate exceptions thrown by onUpgradeError",
       function() {
         sandbox.stub(window.console, "log");
-        var callbackStub = sandbox.stub(dbu, "onUpgradeError");
+        var callbackStub = sandbox.stub(model, "onUpgradeError");
         callbackStub.throws();
 
-        expect(dbu._onOpenError).to.not.Throw();
+        expect(model._onOpenError).to.not.Throw();
         sinon.assert.calledOnce(console.log);
       });
   });
@@ -176,7 +176,7 @@ describe("DatabaseUpgrader", function() {
   describe("#_applyUpgrades", function() {
     it("should apply an upgrade for each version change between old and new",
       function() {
-        dbu.startUpgrade();
+        model.startUpgrade();
 
         // XXX
       });
