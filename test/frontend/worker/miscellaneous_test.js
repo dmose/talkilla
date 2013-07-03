@@ -86,7 +86,8 @@ describe('Miscellaneous', function() {
 
   describe("storeContact", function() {
     afterEach(function() {
-      contactsDb.close();
+      if (contactsDb)
+        contactsDb.close();
       contactsDb = undefined;
       contacts = undefined;
       indexedDB.deleteDatabase(contactDBName);
