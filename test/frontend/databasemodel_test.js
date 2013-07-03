@@ -61,36 +61,9 @@ describe("DatabaseModel", function() {
       expect(model.onUpgradeError).to.equal(errorCallback);
     });
 
-  it("should call #_initializeUpgraders",
-    function() {
-      var stub = sandbox.stub(DatabaseModel.prototype,
-        "_initializeUpgraders");
-
-      new DatabaseModel(contactDBName, successCallback, errorCallback);
-
-      sinon.assert.calledOnce(stub);
-      sinon.assert.calledWithExactly(stub);
-    });
-
-  describe("#_initializeUpgraders", function() {
-    it("should set #_upgraders to an array of _latestVersion functions",
-      function() {
-        var stubDbu = sinon.createStubInstance(DatabaseModel);
-        stubDbu._initializeUpgraders = model._initializeUpgraders;
-
-        stubDbu._initializeUpgraders();
-
-        expect(stubDbu._upgraders).to.be.an.instanceOf(Array);
-        expect(stubDbu._upgraders).to.have.length(stubDbu._latestVersion);
-        stubDbu._upgraders.forEach(function(f) {
-          expect(f).to.be.an.instanceOf(Function);
-        });
-      });
-  });
-
-  describe("#startUpgrade", function() {
+  describe("#openDatabase", function() {
     beforeEach(function() {
-      model.startUpgrade();
+      model.openDatabase();
     });
 
     afterEach(function() {
@@ -103,21 +76,30 @@ describe("DatabaseModel", function() {
           contactDBName, model._latestVersion);
       });
 
-    it("should attach _onOpenSuccess to the open request", function() {
+    it("should attach _onOpenSuccess function to the open request", function() {
       expect(model._openRequest.onsuccess).to.equal(model._onOpenSuccess);
+      expect(model._openRequest.onsuccess).to.be.an.instanceOf(Function);
+
     });
 
-    it("should attach _onOpenError to the open request", function() {
+    it("should attach _onOpenError function to the open request", function() {
       expect(model._openRequest.onerror).to.equal(model._onOpenError);
+      expect(model._openRequest.onerror).to.be.an.instanceOf(Function);
+
     });
 
-    it("should attach _onOpenBlocked to the open request", function() {
+    it("should attach _onOpenBlocked function to the open request", function() {
       expect(model._openRequest.onblocked).to.equal(model._onOpenBlocked);
+      expect(model._openRequest.onblocked).to.be.an.instanceOf(Function);
     });
 
-    it("should attach _upgrade to the open request", function() {
-      expect(model._openRequest.onupgradeneeded).to.equal(model._applyUpgrades);
-    });
+    it("should attach _onUpgradeNeeded function to the open request",
+      function() {
+        expect(model._openRequest.onupgradeneeded).
+          to.equal(model._onUpgradeNeeded);
+        expect(model._openRequest.onupgradeneeded).
+          to.be.an.instanceOf(Function);
+      });
   });
 
   describe("#_onOpenSuccess", function() {
@@ -171,37 +153,4 @@ describe("DatabaseModel", function() {
     it("should execute some yet-to-be-defined behavior!");
   });
 
-  // XXX this upgrade API (and all impls) are going to need to become
-  // async as soon as we have a need to migrate data in some interesting way
-  describe("#_applyUpgrades", function() {
-    it("should apply an upgrade for each version change between old and new",
-      function() {
-        model.startUpgrade();
-
-        // XXX
-      });
-
-    it("should apply all upgrades as part of a single transaction");
-
-    // XXX test/refactor fireCallback
-
-    it("should fire this.onUpgradeError callback if any upgrader fails");
-
-    it("should fire this.onSuccessCallback if all upgraders succeed");
-
-    // XXX does this makes sense
-    it('should handle a future version gracefully');
-
-    // XXX other failures to test for?
-  });
-
-  describe("#_initialize1", function() {
-    it("should create an ObjectStore with a keyPath of 'username'");
-    it("should create an unique index named username on the username key");
-    it("should handle a ConstraintError cleanly");
-  });
-
-  describe("#_upgrades[1]", function() {
-    // XXX
-  });
 });

@@ -13,13 +13,11 @@ function DatabaseModel(dbName, successCallback, errorCallback) {
   if (!errorCallback || typeof errorCallback !== "function")
     throw new Error("second arg must be an error callback function");
   this.onUpgradeError = errorCallback;
-
-  this._initializeUpgraders();
 }
 DatabaseModel.prototype = {
   _latestVersion: 2,
 
-  startUpgrade: function() {
+  openDatabase: function() {
     "use strict";
     this._openRequest = window.indexedDB.open(this._dbName,
       this._latestVersion);
@@ -27,7 +25,7 @@ DatabaseModel.prototype = {
     this._openRequest.onsuccess = this._onOpenSuccess;
     this._openRequest.onerror = this._onOpenError;
     this._openRequest.onblocked = this._onOpenBlocked;
-    this._openRequest.onupgradeneeded = this._applyUpgrades;
+    this._openRequest.onupgradeneeded = this._onUpgradeNeeded;
   },
 
   _onOpenSuccess: function() {
@@ -52,23 +50,8 @@ DatabaseModel.prototype = {
     "use strict";
   },
 
-  _applyUpgrades: function() {
-    "use strict";
-  },
-
-  _initializeUpgraders: function() {
-    "use strict";
-    this._upgraders = [];
-    this._upgraders[0] = this._initialize1;
-    this._upgraders[1] = this._upgrade1to2;
-  },
-
-  _initialize1: function() {
+  _onUpgradeNeeded: function() {
     "use strict";
 
-  },
-
-  _upgrade1to2: function() {
-    "use strict";
   }
 };
