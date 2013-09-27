@@ -184,4 +184,11 @@
     return [scaleFactor * streamSize[0], scaleFactor * streamSize[1]];
   };
 
+  /**
+   * YYY empty because it needs to be stubbed for a test elsewhere.
+   * Up next: implement this
+   */
+  app.utils.getPillarboxWidth = function () {
+
+  };
 })(app, _);
