@@ -174,14 +174,16 @@ function _setupSPA(spa) {
   spa.on("users", function(data) {
     data.forEach(function(user) {
       tkWorker.users.set(user.nick,
-                         {username: user.nick, presence: "connected"});
+                         {username: user.nick, presence: "connected",
+                          avatar: tkWorker.getNextPlaceHolderIcon()});
     });
 
     tkWorker.ports.broadcastEvent("talkilla.users", tkWorker.users.toArray());
   });
 
   spa.on("userJoined", function(userId) {
-    tkWorker.users.set(userId, {username:userId, presence: "connected"});
+    tkWorker.users.set(userId, {username:userId, presence: "connected",
+                                avatar: tkWorker.users.get(userId).avatar});
 
     tkWorker.ports.broadcastEvent("talkilla.users", tkWorker.users.toArray());
     tkWorker.ports.broadcastEvent("talkilla.user-joined", userId);
@@ -191,7 +193,8 @@ function _setupSPA(spa) {
     if (!tkWorker.users.has(userId))
       return;
 
-    tkWorker.users.set(userId, {presence: "disconnected"});
+    tkWorker.users.set(userId, {presence: "disconnected",
+                                avatar: tkWorker.users.get(userId).avatar});
 
     tkWorker.ports.broadcastEvent("talkilla.users", tkWorker.users.toArray());
     tkWorker.ports.broadcastEvent("talkilla.user-left", userId);
@@ -534,7 +537,7 @@ PortCollection.prototype = {
   },
 
   /**
-   * Broadcast debug informations to all ports.
+   * Broadcast debug information to all ports.
    */
   broadcastDebug: function(label, data) {
     if (!gConfig.DEBUG)
@@ -579,6 +582,7 @@ function TkWorker(options) {
   this.initialized = false;
   // XXX In future, this may switch to supporting multiple SPAs
   this.spa = undefined;
+
 }
 
 TkWorker.prototype = {
@@ -726,6 +730,15 @@ TkWorker.prototype = {
       if (callback)
         callback();
     });
+  },
+  userIconPlaceholderCurrentIndex: 0,
+  userIconPlaceholders: 7,
+  getNextPlaceHolderIcon: function() {
+    this.userIconPlaceholderCurrentIndex =
+      (this.userIconPlaceholderCurrentIndex + 1) % this.userIconPlaceholders;
+
+    return "/img/demo-avatars/placeholder-face-" +
+      this.userIconPlaceholderCurrentIndex + ".jpg";
   }
 };
 

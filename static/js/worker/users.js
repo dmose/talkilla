@@ -67,6 +67,7 @@ var CurrentUsers = (function() {
       (contacts || [])
         .forEach(function(contact) {
           contact.presence = this.getPresence(contact.username);
+          contact.avatar = tkWorker.getNextPlaceHolderIcon();
           this.set(contact.username, contact);
         }, this);
     },
