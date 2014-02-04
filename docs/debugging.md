@@ -112,7 +112,7 @@ To use the add-on:
 (https://addons.mozilla.org/en-US/firefox/addon/indexeddb-browser/).
 
 2. In the profile you want to use it in, execute the following shell
-command to make it with Firefox 26 and later:
+command to make it work with Firefox 26 and later:
 
 ```ln -s storage/persistent ./indexedDB```
 
