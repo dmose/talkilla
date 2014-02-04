@@ -105,3 +105,15 @@ To use the add-on:
 5. Focus the main browser window again, and click on the element you want to inspect; it will be shown/selected in the tree on the left side of the DOM Inspector window.
 
 6. At the top of the right panel, there's a drop down to select between "DOM Node", "Box Model", "CSS Rules", "Computed Style", "JavaScript Object". All these views are very useful (for different purposes), try them :-).
+
+# Inspecting the contents of IndexedDB
+
+1. Install [Ben Turner's IndexedDB Browser]
+(https://addons.mozilla.org/en-US/firefox/addon/indexeddb-browser/).
+
+2. In the profile you want to use it in, execute the following shell
+command to make it with Firefox 26 and later:
+
+```ln -s storage/persistent ./indexedDB```
+
+3. Click on Tools -> Web Developer -> IndexedDB Browser
