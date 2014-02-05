@@ -3,13 +3,15 @@
 var socialSharedState = (function() {
   "use strict";
 
-  function SocialSharedState() {
+  function SocialSharedState(idb, dbName) {
+    this._idb = idb;
+    this._dbName = dbName;
   }
 
   SocialSharedState.prototype = {
 
-    get: function() {
-      return undefined;
+    get: function(name, callback) {
+      callback(undefined);
     }
   };
 
