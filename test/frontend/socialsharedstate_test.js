@@ -20,19 +20,30 @@ describe('SocialSharedState', function () {
   });
   describe("#getAsync", function (done) {
 
-    it("should callback a value of undefined if a given name doesn't exist",
+    it("should callback a value of undefined  if a given name doesn't exist",
       function(done) {
-        sharedState.get("fakeName",
+        sharedState.getAsync("fakeName",
 
-          function (value) {
+          function (error, value) {
+
+            expect(error).to.equal(null);
             expect(value).to.equal(undefined);
+
             done();
           });
       });
 
-    it.skip("should callback a given value that has been set in the database",
+    it("should callback a given boolean value that has been previously set",
       function(done) {
+        sharedState.setAsync("fakeName", true, function() {
+          sharedState.getAsync("fakeName", function(error, value) {
 
+            expect(error).to.equal(null);
+            expect(value).to.equal(true);
+
+            done();
+          });
+        });
       });
 
   });
